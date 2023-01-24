@@ -3,6 +3,7 @@
 
 # Important links to resources
 
+* [Planned efforts generator](https://docs.google.com/spreadsheets/d/1YHSfLx-KT8mAETZ04e-jvCTvrYoY-VaRzful4ui_cDs/edit?usp=sharing)
 * [Skeleton Documention](https://ebony-beryllium-736.notion.site/Skeleton-Wiki-df6b49747653442699dc20752ad5f4d3)
 * [Prformance Opt](https://ebony-beryllium-736.notion.site/Performance-Optimisation-on-Shopify-cc555b398d88441aa9880e50009f3ece)
 * [Prebuild Solution ](https://ebony-beryllium-736.notion.site/9f9580ec93a440b7a23a430c5bcd2260?v=43ed2153c66c47b0ace0ce2ffb69f35b)
