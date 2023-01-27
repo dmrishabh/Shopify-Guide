@@ -265,7 +265,16 @@ padding-bottom: {{ section.settings.mpadding_bottom }}px;
 ### As we know liquid load only once with DOM  so to change it later i'll use js here , here i'll take a ref of Dawn.
 
 * first we need to add variant meta field in product variant 
-* then in pdp main section i.e. main-product.liquid where we are using that block in this example we are using a Delivery date metafield
+* Add this below code in pdp main section i.e. main-product.liquid where we are using that block in this example we are using a Delivery date 
+* Add this in schema
+
+```json
+    {
+		"type":"delivery_date",
+		"name": "Delivery date",
+        "limit": 1
+	  }
+```
 
 ```js
   {% when 'delivery_date' %}
