@@ -13,7 +13,7 @@
 ----------
 # small-solutions-shopify
 ----------
-## Lazy image snippet
+# Lazy image snippet
 ----------
 ```html
 {% comment %}
@@ -67,7 +67,7 @@
 </picture>
 
 ```
-## Accordion closer fix using detail and summery
+# Accordion closer fix using detail and summery
 -----
 * Html
 
@@ -104,7 +104,7 @@ target.forEach(ele=>{
 </script>
 ```
 ---------
-## Collection page FIlter and Sort Together in BE YOURS THEME
+# Collection page FIlter and Sort Together in BE YOURS THEME
 ```javascript
  onSubmitHandler(event) {
     
@@ -122,7 +122,7 @@ target.forEach(ele=>{
   }
 ```
 -----------------
-## Active class
+# Active class
 ```js
   let filterBtn =  document.querySelectorAll('.filter_item');
   filterBtn.forEach(function(ele) {
@@ -135,7 +135,7 @@ target.forEach(ele=>{
 })
 ```
 ----------
-## How do manage spacing b/w sections if it's not uniform for all section in design flow (if yo want to add left right spacing also you can add in same way)
+# How do manage spacing b/w sections if it's not uniform for all section in design flow (if yo want to add left right spacing also you can add in same way)
 * Add this in Schema
 ```json
 
@@ -260,7 +260,7 @@ padding-bottom: {{ section.settings.mpadding_bottom }}px;
 ```
 ---------------
 
-## Update data on variant change that is coming from variant metafield 
+# Update data on variant change that is coming from variant metafield 
 
 ### As we know liquid load only once with DOM  so to change it later i'll use js here , here i'll take a ref of Dawn.
 
