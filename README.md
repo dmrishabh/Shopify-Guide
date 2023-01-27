@@ -11,9 +11,8 @@
 * [Shopify ajax Api](https://shopify.dev/api/ajax)
 * [To do courses](https://www.shopify.com/in/partners/blog/97493062-free-course-10x-your-shopify-theme-development-skills-with-these-free-courses)
 ----------
-<h1 align="center" style="margin-top: 0px;">Small solutions shopify</h1>
+<h1 align="center" style="margin-top: 0px;">Small shopify solutions</h1>
 
-----------
 # Lazy image snippet
 ----------
 ```html
