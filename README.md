@@ -7,6 +7,7 @@
 * [Skeleton Documention](https://ebony-beryllium-736.notion.site/Skeleton-Wiki-df6b49747653442699dc20752ad5f4d3)
 * [Prformance Opt](https://ebony-beryllium-736.notion.site/Performance-Optimisation-on-Shopify-cc555b398d88441aa9880e50009f3ece)
 * [Prebuild Solution ](https://ebony-beryllium-736.notion.site/9f9580ec93a440b7a23a430c5bcd2260?v=43ed2153c66c47b0ace0ce2ffb69f35b)
+* [Github Training](https://ebony-beryllium-736.notion.site/How-to-setup-git-Create-a-repo-Origin-Clone-repo-fdb2bf4101a944ebb8b29f08a7fcb7c4)
 * [Shopify ajax Api](https://shopify.dev/api/ajax)
 * [To do courses](https://www.shopify.com/in/partners/blog/97493062-free-course-10x-your-shopify-theme-development-skills-with-these-free-courses)
 ----------
@@ -258,5 +259,93 @@ padding-bottom: {{ section.settings.mpadding_bottom }}px;
 {{ discount }}
 ```
 ---------------
+
+## Update data on variant change that is coming from variant metafield 
+
+### As we know liquid load only once with DOM  so to change it later i'll use js here , here i'll take a ref of Dawn.
+
+* first we need to add variant meta field in product variant 
+* then in pdp main section i.e. main-product.liquid where we are using that block in this example we are using a Delivery date metafield
+
+```js
+  {% when 'delivery_date' %}
+              <script id="date-data" type="application/json">
+                { {%- for variant in product.variants -%}
+                  "{{ variant.id }}":"{{ variant.metafields.custom.delivery_days | strip_newlines }}"
+                    {% unless forloop.last %},{% endunless %}
+                  {%- endfor -%}
+                  }
+              </script>
+            
+              <p>Delivered by <strong><span id="toDate"></span> </strong></p>
+                {{ '//cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js' | script_tag }}
+        <script>
+    
+                // update date 
+              let date_Data = JSON.parse(document.querySelector('#date-data').innerHTML);
+              let delivery_date = {{ product.variants[0].metafields.custom.delivery_days }};
+              
+              let url = window.location.href;
+              if(url.includes("?variant")){
+               url = window.location.href.split("variant=");
+              delivery_date = date_Data[url[1]];
+              }
+              else{
+             delivery_date = {{ product.variants[0].metafields.custom.delivery_days }};
+              }
+               if (delivery_date != '') {
+                delivery_date = parseInt(delivery_date);
+                }else{
+                delivery_date = 10;
+                }
+                var tdate = Date.today().addDays(delivery_date);
+                  if (tdate.is().saturday() || tdate.is().sunday()) {
+                    tdate = tdate.next().monday();
+                  }
+                document.getElementById('toDate').innerHTML = tdate.toString('dddd, MMMM dS');
+        </script>
+```
+* Add this to global.js
+inside variant change component  js "VariantSelects" in Dawn
+```js
+// call this function on variant change 
+  onVariantChange() {
+    this.updateOptions();
+    this.updateMasterId();
+    this.toggleAddButton(true, '', false);
+    this.updatePickupAvailability();
+    this.removeErrorMessage();
+      this.changeDelDate();
+    
+
+    if (!this.currentVariant) {
+      this.toggleAddButton(true, '', true);
+      this.setUnavailable();
+    } else {
+      this.updateMedia();
+      this.updateURL();
+      this.updateVariantInput();
+      this.renderProductInfo();
+      this.updateShareUrl();
+    }
+  }
+// add this function def
+changeDelDate(){
+   let datedata = JSON.parse(document.querySelector('#date-data').innerHTML);
+   let del_date = datedata[this.currentVariant.id];
+    if (del_date != '') {
+        del_date = parseInt(del_date);
+    }else{
+      del_date = 10;
+    }
+    var toDate = Date.today().addDays(del_date);
+      if (toDate.is().saturday() || toDate.is().sunday()) {
+        toDate = toDate.next().monday();
+      }
+    document.getElementById('toDate').innerHTML = toDate.toString('dddd, MMMM dS');
+  }
+```
+------------------
+
 
 
