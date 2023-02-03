@@ -18,7 +18,7 @@
 ```html
 {% comment %}
   Render an responsive image.
-
+  Uses: {%- render 'SNIPPET_NAME', desktopImage:' Image object for desktop', mobileImage: 'mobileImage'  -%} 
   Accepts:
   - class: {String} Class to add to the image.
   - id: {String} ID to add to the image.
