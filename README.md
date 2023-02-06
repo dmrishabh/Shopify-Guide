@@ -355,6 +355,100 @@ changeDelDate(){
   }
 ```
 ------------------
+# Free shipping indicator progress bar 
 
+## Free Shipping Bar displays progressive messages when customers put more items in their shopping carts, and lets them know how much more to buy in order to get your    free shipping.
+* First we'll create snippet called free-shipping.liquid and paste below code in that 
+```html
+{% comment %}
+Uses : {%  render 'free-shipping'  %}
+{% endcomment %}
+<div class="shipping-bar">
+  {% liquid
+    assign free_shipping = settings.free_shipping | times: 1
+    assign cart_price = cart.total_price | divided_by: 100
+    assign change = free_shipping | minus: cart_price
+    assign perc_change = 100
+    if change > 0
+      assign perc_change = change | times: 100 | divided_by: free_shipping
+      assign perc_change = 100 | minus: perc_change
+    endif
+  %}
+  {% if perc_change == 100 %}
+    <div class="shipping-bar__title font-bold text-md cart-drawer__black">Free shipping</div>
+  {% else %}
+    <div class="shipping-bar__message cart-drawer__black h6">
+      <p>
+        You are <strong>{{ change | times: 100 | money }}</strong> away from <strong>free shipping*</strong>
+      </p>
+    </div>
+  {% endif %}
+  <div class="shipping-bar__container">
+    <div class="shipping-bar__filled" style="width: {{ perc_change | string | append: '%' }}">
+      <div class="shipping__icon" style="left: {{ perc_change | string | append: '%' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="31.678" height="35.847" viewBox="0 0 31.678 35.847">
+          <g id="Group_200290" data-name="Group 200290" transform="translate(-3.291 15.779) rotate(-45)">
+          <path id="Path_301827" data-name="Path 301827" d="M.344,6.568A14.727,14.727,0,0,0,.173,2.1C.1,1.441-.237.615.3.226,2.236-1.181,2.36,4.375,3.017,5.8,4.124,4.508,5.131,2.977,6.74,2.337A2.954,2.954,0,0,1,7.9,2.045c4.156.113-3.324,3.435-2.831,4.911a12.869,12.869,0,0,1,4.963-.6,2.408,2.408,0,0,1,1.135.372c2.063,1.343-4.55,1.982-5.887,3.349" transform="translate(10.75 0)" fill="#318200"></path>
+          <path id="Path_301828" data-name="Path 301828" d="M.8,8.065a12.059,12.059,0,0,1,.342-1.392,27.225,27.225,0,0,1,1.4-3.992c.641-1.178,3.03-4.265,8.537-1.671a49.368,49.368,0,0,1,7.286,3.915s4.678,3.025,1.748,7.883a30.183,30.183,0,0,1-6.086,6.888,18.436,18.436,0,0,1-5.567,3.351c-2.339.862-5.2,1.171-6.98-.689,0,0-2.811-1.23-.677-14.291" transform="translate(0 4.654)" fill="#A31207"></path>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+  {% if perc_change == 100 %}
+    <div class="shipping-bar__message cart-drawer__black h6">
+      <p><strong>Yay!!</strong> you unlocked <strong>free shipping</strong></p>
+    </div>
+  {% endif %}
+</div>
 
+```
+* Add css in your global css file or in specific file .
+```css
+.shipping-bar {
+    width: 100%;
+    border-radius: 2rem;
+    background: #F2F0FF;
+    padding: 0.75rem 2rem;
+    margin: 1.5rem 0 0.5rem;
+}
+.cart-drawer__black {
+    color: #111314;
+}
+.shipping-bar .shipping-bar__container {
+    height: 1rem;
+    background: #fff;
+    border-radius: 1rem;
+    position: relative;
+    margin: 1.4rem 0 0.75rem;
+}
+.shipping-bar .shipping-bar__filled {
+    height: 100%;
+    border-radius: 1rem;
+    transition: all .75s ease-in-out;
+    background-color: #AFAFED;
+}
+.shipping-bar .shipping__icon {
+    position: absolute;
+    transition: all .75s ease-in-out;
+    transform: translate(-70%,-45%) rotate(30deg);
+}
+```
+* we need to add one input setting in theme settings that is , settings_schema.json
+```json
+  {
+    "name": "Free shipping bar",
+   "settings": [
+      {
+        "type": "text",
+        "id":"free_shipping",
+        "label":"Free shipping limit"
+      }
+  ]
+  }
+```
+* Now you can render this snippet
+```ruby
+{%  render 'free-shipping'  %}
+```
 
