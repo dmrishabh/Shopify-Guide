@@ -770,5 +770,72 @@ details[open] > .share-button__fallback {
   display: none;
 }
 ```
+# Swatches color for product in shopify
+### Usually we take swatch colors from background image or background color but that requires inline css and also an extra work to add image in files with same name as of option values , so here we'll make use of schema and add color names and their hex values just in form of blocks 
+
+- Step 1 
+	- Create a section `color-swatch.liquid`
+	- paste following code 
+	```html
+	 <style>
+	  {% for block in section.blocks %}
+	  .item-swatch [data-value="{{ block.settings.title }}"],
+	  .item-swatch [data-value="{{ block.settings.title | downcase }}"],
+	  .item-swatch [data-value="{{ block.settings.title | downcase | handle }}"],
+	  .item-swatch [data-value="{{ block.settings.title | capitalize  }}"],
+	  .swatch [data-value="{{ block.settings.title }}"] .bgImg,
+	  .swatch [data-value="{{ block.settings.title | downcase }}"] .bgImg,
+	  .swatch [data-value="{{ block.settings.title | capitalize  }}"] .bgImg,
+	  .color-swatch-enabled[data-tag="{{ block.settings.title }}"] span,
+	  .color-swatch-enabled[data-tag="{{ block.settings.title | downcase }}"] span,
+	  .color-swatch-enabled[data-tag="{{ block.settings.title | capitalize }}"] span {
+	    background-color: {{ block.settings.color_code }} !important;
+	  }
+	  {% endfor %}
+	</style>
+
+
+	{% schema %}
+	  {
+	    "name": "Color Settings",
+	    "settings": [
+		{
+		    "type": "header",
+		    "content": "Color Settings"
+		},
+		{
+		  "type": "paragraph",
+		  "content": "Add Color Settings here"
+		}
+	    ],
+	    "blocks": [
+	      {
+		"type": "colorSettings",
+		"name": "Color Settings",
+		"settings": [
+		  {
+			    "type": "text",
+		    "id": "title",
+		    "label": "Color Name"
+		  },
+		  {
+		    "type": "color",
+		    "id": "color_code",
+		    "label": "Color Code",
+		    "default": "#000000"
+		  }
+		]
+	      }
+	    ]
+ 	 }
+	{% endschema %}	
+	```
+	- Add this section in `theme.liquid` just above header `{% section 'color-swatch' %}`
+	- Now whereever you want to use swatch just add `class="item-swatch"` in perent and where we were adding background just add `data-value={{value}}` value 	    will be the option value of product	
+	
+----
+
+
+
 
 
