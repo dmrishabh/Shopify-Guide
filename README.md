@@ -835,6 +835,24 @@ details[open] > .share-button__fallback {
 	
 ----
 
+# Tag Based badges
+
+- 
+```html
+{% for tag in product.tags %}
+        {% if tag contains 'badge_' %}
+          {% assign badge_text = tag | split: '_' | last %}
+        {% endif %}
+      {% endfor %}
+      {% if badge_text != blank %}
+        <span class="badge">
+          {{ badge_text }}
+        </span>
+      {% endif %}
+```
+- Now add tags in this format `badge_NEW` `badge_HOT`
+
+
 
 
 
