@@ -14,6 +14,1215 @@
 <h1 align="center" style="margin-top: 0px;">Small shopify solutions</h1>
 
 # Lazy image snippet
+----
+
+`countdown-timer.liquid`
+
+```html
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    {%- if section.settings.image != blank %}
+      --image-ratio-percent: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;
+      --image-position: {{ section.settings.image_position }};
+    {% endif -%}
+    {%- if section.settings.use_custom_colors %}
+      --gradient-background: {% if section.settings.gradient_background != blank %}{{ section.settings.gradient_background }}{% else %}{{ section.settings.colors_background }}{% endif %};
+      --color-background: {{ section.settings.colors_background.red }}, {{ section.settings.colors_background.green }}, {{ section.settings.colors_background.blue }};
+      --color-foreground: {{ section.settings.colors_text.red }}, {{ section.settings.colors_text.green }}, {{ section.settings.colors_text.blue }};
+      --color-link: var(--color-foreground);
+      --color-border: var(--color-foreground);
+      --color-heading: var(--color-foreground);
+      --color-button-background: {{ section.settings.colors_button_background.red }}, {{ section.settings.colors_button_background.green }}, {{ section.settings.colors_button_background.blue }};
+      --color-button-text: {{ section.settings.colors_button_label.red }}, {{ section.settings.colors_button_label.green }}, {{ section.settings.colors_button_label.blue }};
+      --color-button-border: var(--color-button-background);
+      --color-shadow: var(--color-foreground);
+    {% endif -%}
+    --shadow-opacity: 0.3;
+  }
+  {%- if section.settings.image_mobile != blank and section.settings.mobile_image_ratio == 'adapt' %}
+    @media screen and (max-width: 749px) {
+      #shopify-section-{{ section.id }} {
+        --image-ratio-percent: {{ 1 | divided_by: section.settings.image_mobile.aspect_ratio | times: 100 }}%;
+      }
+    }  
+  {% endif -%}
+{%- endstyle -%}
+
+{{ 'section-image-with-text.css' | asset_url | stylesheet_tag }}
+{{ 'section-countdown-timer.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign grid_class = 'image-with-text__grid'
+  if section.settings.layout == 'text_first'
+    assign grid_class = grid_class | append: ' image-with-text__grid--reverse'
+  endif
+
+  if section.settings.mobile_layout == 'text_first'
+    assign grid_class = grid_class | append: ' image-with-text__grid-mobile--reverse'
+  endif
+
+  if section.settings.mobile_layout == 'no_image'
+    assign grid_class = grid_class | append: ' image-with-text__grid-mobile--no-image'
+  endif
+
+  if section.settings.mobile_layout == 'overlap'
+    assign grid_class = grid_class | append: ' image-with-text__grid-mobile--overlap'
+  endif
+-%}
+
+<div class="section--padding{% if section.settings.show_divider %} section--divider{% endif %}">
+  <div class="image-with-text countdown-timer{% if section.settings.use_custom_colors and section.settings.colors_background != settings.colors_background %} image-with-text--colored{% endif %}{% if section.settings.enlarge_content %} image-with-text--enlarge{% endif %} page-width{% if section.settings.full_width %} page-width--full-width{% endif %}">
+    <div class="{{ grid_class }} grid grid--gapless grid--1-col grid--2-col-tablet">
+      <div class="grid__item">
+        <use-animate data-animate="zoom-fade" class="media-wrapper">
+          <div class="image-animate media--{{ section.settings.image_ratio }} media-mobile--{{ section.settings.mobile_image_ratio }} {% if section.settings.image != blank %}media{% else %}media--placeholder{% endif %}">
+            {%- if section.settings.image != blank -%}
+              {%- capture sizes -%}(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 | divided_by: 2 }}px, (min-width: 750px) calc((100vw - 10rem) / 2),{% if section.settings.full_width %} 100vw{% else %} calc(100vw - 3rem){% endif %}{%- endcapture -%}
+              {%- liquid
+                if section.settings.image_mobile == blank
+                  echo section.settings.image | image_url: width: 1500 | image_tag: loading: 'lazy', class: 'image-fit', sizes: sizes, widths: '180, 360, 535, 750, 1100, 1500', is: 'lazy-image'
+                else
+                  echo section.settings.image_mobile | image_url: width: 1500 | image_tag: loading: 'lazy', class: 'image-fit medium-hide large-up-hide', sizes: sizes, widths: '180, 360, 535, 750, 1100, 1500', is: 'lazy-image'
+                  echo section.settings.image | image_url: width: 1500 | image_tag: loading: 'lazy', class: 'image-fit small-hide', sizes: sizes, widths: '180, 360, 535, 750, 1100, 1500', is: 'lazy-image'
+                endif
+              -%}
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'placeholder' }}
+            {%- endif -%}
+          </div>
+        </use-animate>
+      </div>
+      <div class="grid__item">
+        <div class="image-with-text__content {{ section.settings.text_box_position }} {{ section.settings.text_alignment }} mobile-{{ section.settings.mobile_text_alignment }}">
+          {%- for block in section.blocks -%}
+            {% case block.type %}
+              {%- when 'heading' -%}
+                <{{ block.settings.heading_tag }} class="image-with-text__heading {{ block.settings.heading_size }}" {{ block.shopify_attributes }}>{{ block.settings.heading | escape }}</{{ block.settings.heading_tag }}>
+              {%- when 'subheading' -%}
+                <p class="image-with-text__subheading{% if block.settings.secondary_color %} image-with-text__subheading--colored{% endif %} {{ block.settings.subheading_size }}" {{ block.shopify_attributes }}>{{ block.settings.subheading | escape }}</p>
+              {%- when 'text' -%}
+                <div class="image-with-text__text{% if block.settings.secondary_color %} image-with-text__text--colored{% endif %} {{ block.settings.text_size }} rte" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+              {%- when 'custom_liquid' -%}
+                <div class="image-with-text__text rte" {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+              {%- when 'button' -%}
+                {%- if block.settings.button_label != blank -%}
+                  {%- if block.settings.button_style_secondary -%}
+                    <a class="button button--cta button--{{ block.settings.button_size }}"{% if block.settings.button_link != blank %} href="{{ block.settings.button_link }}"{% else %} role="link" aria-disabled="true"{% endif %} {{ block.shopify_attributes }}>
+                      <span class="label">{{ block.settings.button_label | escape }}</span>
+                      {% render 'icon', icon: 'arrow' %}
+                    </a>
+                  {%- else -%}
+                    <a class="button button--{{ block.settings.button_size }}"{% if block.settings.button_link != blank %} href="{{ block.settings.button_link }}"{% else %} role="link" aria-disabled="true"{% endif %} {{ block.shopify_attributes }}>
+                      {{ block.settings.button_label | escape }}
+                    </a>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- when 'countdown' -%}
+                {%- if block.settings.date != blank -%}
+                  <countdown-timer class="countdown countdown--{{ block.settings.number_size }}" data-date="{{ block.settings.date | escape }}" {{ block.shopify_attributes }}></countdown-timer>
+                  <div class="countdown-timer__message {{ block.settings.message_size }} rte">
+                    {{ block.settings.message }}
+                  </div>
+                {%- endif -%}
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.countdown-timer.name",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.all.image.label"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "options": [
+        {
+          "value": "20% 0",
+          "label": "t:sections.all.image_position.options__1.label"
+        },
+        {
+          "value": "top center",
+          "label": "t:sections.all.image_position.options__2.label"
+        },
+        {
+          "value": "80% 0",
+          "label": "t:sections.all.image_position.options__3.label"
+        },
+        {
+          "value": "20% 50%",
+          "label": "t:sections.all.image_position.options__4.label"
+        },
+        {
+          "value": "center center",
+          "label": "t:sections.all.image_position.options__5.label"
+        },
+        {
+          "value": "80% 50%",
+          "label": "t:sections.all.image_position.options__6.label"
+        },
+        {
+          "value": "20% 100%",
+          "label": "t:sections.all.image_position.options__7.label"
+        },
+        {
+          "value": "bottom center",
+          "label": "t:sections.all.image_position.options__8.label"
+        },
+        {
+          "value": "80% 100%",
+          "label": "t:sections.all.image_position.options__9.label"
+        }
+      ],
+      "default": "center center",
+      "label": "t:sections.all.image_position.label",
+      "info": "t:sections.all.image_position.info"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "t:sections.countdown-timer.settings.layout.options__1.label"
+        },
+        {
+          "value": "text_first",
+          "label": "t:sections.countdown-timer.settings.layout.options__2.label"
+        }
+      ],
+      "default": "image_first",
+      "label": "t:sections.countdown-timer.settings.layout.label"
+    },
+    {
+      "type": "select",
+      "id": "text_box_position",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:sections.countdown-timer.settings.text_box_position.options__1.label"
+        },
+        {
+          "value": "middle",
+          "label": "t:sections.countdown-timer.settings.text_box_position.options__2.label"
+        },
+        {
+          "value": "bottom",
+          "label": "t:sections.countdown-timer.settings.text_box_position.options__3.label"
+        }
+      ],
+      "default": "middle",
+      "label": "t:sections.countdown-timer.settings.text_box_position.label"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.all.text_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.all.text_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.all.text_alignment.options__3.label"
+        }
+      ],
+      "default": "left",
+      "label": "t:sections.all.text_alignment.label"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "label": "t:sections.all.image_ratio.options__1.label",
+          "value": "adapt"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__2.label",
+          "value": "400px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__3.label",
+          "value": "450px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__4.label",
+          "value": "500px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__5.label",
+          "value": "550px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__6.label",
+          "value": "600px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__7.label",
+          "value": "650px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__8.label",
+          "value": "700px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__9.label",
+          "value": "750px"
+        },
+        {
+          "label": "t:sections.all.image_ratio.options__10.label",
+          "value": "100vh"
+        }
+      ],
+      "default": "650px",
+      "label": "t:sections.all.image_ratio.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "enlarge_content",
+      "default": false,
+      "label": "t:sections.countdown-timer.settings.enlarge_content.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": true,
+      "label": "t:sections.all.full_width.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "default": false,
+      "label": "t:sections.all.show_divider.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.mobile_layout.header.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "t:sections.all.image_mobile.label"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "t:sections.countdown-timer.settings.mobile_layout.options__1.label"
+        },
+        {
+          "value": "text_first",
+          "label": "t:sections.countdown-timer.settings.mobile_layout.options__2.label"
+        },
+        {
+          "value": "no_image",
+          "label": "t:sections.countdown-timer.settings.mobile_layout.options__3.label"
+        },
+        {
+          "value": "overlap",
+          "label": "t:sections.countdown-timer.settings.mobile_layout.options__4.label"
+        }
+      ],
+      "default": "image_first",
+      "label": "t:sections.countdown-timer.settings.mobile_layout.label"
+    },
+    {
+      "type": "select",
+      "id": "mobile_text_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.all.mobile_layout.mobile_text_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.all.mobile_layout.mobile_text_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.all.mobile_layout.mobile_text_alignment.options__3.label"
+        }
+      ],
+      "default": "left",
+      "label": "t:sections.all.mobile_layout.mobile_text_alignment.label"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_ratio",
+      "options": [
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__1.label",
+          "value": "auto"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__2.label",
+          "value": "200px"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__3.label",
+          "value": "250px"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__4.label",
+          "value": "300px"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__5.label",
+          "value": "400px"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__6.label",
+          "value": "500px"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__7.label",
+          "value": "600px"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__8.label",
+          "value": "100vh"
+        },
+        {
+          "label": "t:sections.all.mobile_layout.mobile_image_ratio.options__9.label",
+          "value": "adapt"
+        }
+      ],
+      "default": "auto",
+      "label": "t:sections.all.mobile_layout.mobile_image_ratio.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_colors",
+      "default": true,
+      "label": "t:sections.all.colors.use_custom_colors.label"
+    },
+    {
+      "type": "color",
+      "id": "colors_button_label",
+      "label": "t:sections.all.colors.colors_button_label.label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "colors_button_background",
+      "label": "t:sections.all.colors.colors_button_background.label",
+      "default": "#1a1b18"
+    },
+    {
+      "type": "color",
+      "id": "colors_text",
+      "label": "t:sections.all.colors.colors_text.label",
+      "default": "#212326"
+    },
+    {
+      "type": "color",
+      "id": "colors_background",
+      "label": "t:sections.all.colors.colors_background.label",
+      "default": "#f3f3f3"
+    },
+    {
+      "type": "color_background",
+      "id": "gradient_background",
+      "label": "t:sections.all.colors.gradient_background.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.header.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "t:sections.all.padding.padding_top.unit",
+      "label": "t:sections.all.padding.padding_top.label",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "t:sections.all.padding.padding_bottom.unit",
+      "label": "t:sections.all.padding.padding_bottom.label",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "t:sections.countdown-timer.blocks.heading.name",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Countdown timer",
+          "label": "t:sections.all.heading.label"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "options": [
+            {
+              "value": "h2",
+              "label": "t:sections.all.heading_size.options__1.label"
+            },
+            {
+              "value": "h1",
+              "label": "t:sections.all.heading_size.options__2.label"
+            },
+            {
+              "value": "h0",
+              "label": "t:sections.all.heading_size.options__3.label"
+            }
+          ],
+          "default": "h1",
+          "label": "t:sections.all.heading_size.label"
+        },
+        {
+          "type": "select",
+          "id": "heading_tag",
+          "options": [
+            {
+              "value": "h1",
+              "label": "t:sections.all.heading_tag.options__1.label"
+            },
+            {
+              "value": "h2",
+              "label": "t:sections.all.heading_tag.options__2.label"
+            },
+            {
+              "value": "h3",
+              "label": "t:sections.all.heading_tag.options__3.label"
+            },
+            {
+              "value": "h4",
+              "label": "t:sections.all.heading_tag.options__4.label"
+            },
+            {
+              "value": "h5",
+              "label": "t:sections.all.heading_tag.options__5.label"
+            },
+            {
+              "value": "h6",
+              "label": "t:sections.all.heading_tag.options__6.label"
+            },
+            {
+              "value": "div",
+              "label": "t:sections.all.heading_tag.options__7.label"
+            },
+            {
+              "value": "span",
+              "label": "t:sections.all.heading_tag.options__8.label"
+            },
+            {
+              "value": "p",
+              "label": "t:sections.all.heading_tag.options__9.label"
+            }
+          ],
+          "default": "h2",
+          "label": "t:sections.all.heading_tag.label",
+          "info": "t:sections.all.heading_tag.info"
+        }
+      ]
+    },
+    {
+      "type": "subheading",
+      "name": "t:sections.countdown-timer.blocks.subheading.name",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "subheading",
+          "default": "Add a tagline",
+          "label": "t:sections.all.subheading.label"
+        },
+        {
+          "type": "select",
+          "id": "subheading_size",
+          "options": [
+            {
+              "value": "h5",
+              "label": "t:sections.all.subheading_size.options__1.label"
+            },
+            {
+              "value": "h4",
+              "label": "t:sections.all.subheading_size.options__2.label"
+            },
+            {
+              "value": "h3",
+              "label": "t:sections.all.subheading_size.options__3.label"
+            }
+          ],
+          "default": "h5",
+          "label": "t:sections.all.subheading_size.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "secondary_color",
+          "default": false,
+          "label": "t:sections.all.secondary_color.label"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.countdown-timer.blocks.text.name",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "default": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+          "label": "t:sections.all.text.label"
+        },
+        {
+          "type": "select",
+          "id": "text_size",
+          "options": [
+            {
+              "value": "typeset",
+              "label": "t:sections.all.text_size.options__1.label"
+            },
+            {
+              "value": "typeset2",
+              "label": "t:sections.all.text_size.options__2.label"
+            },
+            {
+              "value": "typeset3",
+              "label": "t:sections.all.text_size.options__3.label"
+            }
+          ],
+          "default": "typeset2",
+          "label": "t:sections.all.text_size.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "secondary_color",
+          "default": false,
+          "label": "t:sections.all.secondary_color.label"
+        }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "t:sections.custom-liquid.name",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "t:sections.custom-liquid.settings.custom_liquid.label",
+          "info": "t:sections.custom-liquid.settings.custom_liquid.info"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.countdown-timer.blocks.button.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Button label",
+          "label": "t:sections.all.button_label.label",
+          "info": "t:sections.all.button_label.info"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.all.button_link.label"
+        },
+        {
+          "type": "select",
+          "id": "button_size",
+          "options": [
+            {
+              "value": "small",
+              "label": "t:sections.all.button_size.options__1.label"
+            },
+            {
+              "value": "medium",
+              "label": "t:sections.all.button_size.options__2.label"
+            },
+            {
+              "value": "large",
+              "label": "t:sections.all.button_size.options__3.label"
+            }
+          ],
+          "default": "medium",
+          "label": "t:sections.all.button_size.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_style_secondary",
+          "default": false,
+          "label": "t:sections.all.button_style_secondary.label"
+        }
+      ]
+    },
+    {
+      "type": "countdown",
+      "name": "t:sections.countdown-timer.blocks.countdown.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "date",
+          "label": "t:sections.countdown-timer.blocks.countdown.settings.date.label",
+          "info": "t:sections.countdown-timer.blocks.countdown.settings.date.info"
+        },
+        {
+          "type": "select",
+          "id": "number_size",
+          "options": [
+            {
+              "value": "small",
+              "label": "t:sections.countdown-timer.blocks.countdown.settings.number_size.options__1.label"
+            },
+            {
+              "value": "medium",
+              "label": "t:sections.countdown-timer.blocks.countdown.settings.number_size.options__2.label"
+            },
+            {
+              "value": "large",
+              "label": "t:sections.countdown-timer.blocks.countdown.settings.number_size.options__3.label"
+            }
+          ],
+          "default": "medium",
+          "label": "t:sections.countdown-timer.blocks.countdown.settings.number_size.label"
+        },
+        {
+          "type": "richtext",
+          "id": "message",
+          "label": "t:sections.countdown-timer.blocks.countdown.settings.message.label",
+          "info": "t:sections.countdown-timer.blocks.countdown.settings.message.info"
+        },
+        {
+          "type": "select",
+          "id": "message_size",
+          "options": [
+            {
+              "value": "typeset",
+              "label": "t:sections.countdown-timer.blocks.countdown.settings.message_size.options__1.label"
+            },
+            {
+              "value": "typeset2",
+              "label": "t:sections.countdown-timer.blocks.countdown.settings.message_size.options__2.label"
+            },
+            {
+              "value": "typeset3",
+              "label": "t:sections.countdown-timer.blocks.countdown.settings.message_size.options__3.label"
+            }
+          ],
+          "default": "typeset2",
+          "label": "t:sections.countdown-timer.blocks.countdown.settings.message_size.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.countdown-timer.presets.name",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "countdown"
+        },
+        {
+          "type": "button"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  }
+}
+{% endschema %}
+
+```
+`section-image-with-text.css`
+
+```javascript
+class CountdownTimer extends HTMLElement {
+  constructor() {
+    super();
+
+    this.parent = this.closest('.product-countdown');
+    this.date = new Date(Date.parse(this.dataset.date)).getTime();
+
+    if (isNaN(this.date)) {
+      this.date = new Date(this.dataset.date.replace(/-/g, "/")).getTime();
+
+      if (isNaN(this.date)) {
+        this.unload();
+        return;
+      }
+    }
+
+    theme.initWhenVisible({
+      element: this,
+      callback: this.init.bind(this),
+      threshold: 200
+    });
+  }
+
+  init() {
+    this.timer();
+    this.dataset.interval = setInterval(this.timer.bind(this), 1000);
+  }
+
+  timer() {
+    const now = new Date(),
+      countTo = new Date(this.date),
+      timeDifference = (countTo - now);
+
+    if (timeDifference < 0) {
+      this.unload();
+      return;
+    }
+
+    const secondsInADay = 60 * 60 * 1000 * 24,
+      secondsInAHour = 60 * 60 * 1000;
+
+    const days = Math.floor(timeDifference / (secondsInADay) * 1);
+    const hours = Math.floor((timeDifference % (secondsInADay)) / (secondsInAHour) * 1);
+    const mins = Math.floor(((timeDifference % (secondsInADay)) % (secondsInAHour)) / (60 * 1000) * 1);
+    const secs = Math.floor((((timeDifference % (secondsInADay)) % (secondsInAHour)) % (60 * 1000)) / 1000 * 1);
+
+    if (this.dataset.compact == 'true') {
+      const dayHTML = days > 0 ? `<div class="countdown__item"><span>${days}${window.dateStrings.d}</span></div>` : '';
+      const otherHTML = `<div class="countdown__item"><span>${hours > 9 ? hours : '0' + hours}:${mins > 9 ? mins : '0' + mins}:${secs > 9 ? secs : '0' + secs}</span></div>`;
+  
+      this.innerHTML = dayHTML + otherHTML;
+    }
+    else {
+      const dayHTML = days > 0 ? `<div class="countdown__item"><span>${days}</span> ${days == 1 ? window.dateStrings.day : window.dateStrings.days}</div>` : '';
+      const hourHTML = `<div class="countdown__item"><span>${hours}</span> ${hours == 1 ? window.dateStrings.hour : window.dateStrings.hours}</div>`;
+      const minHTML = `<div class="countdown__item"><span>${mins}</span> ${mins == 1 ? window.dateStrings.minute : window.dateStrings.minutes}</div>`;
+      const secHTML = `<div class="countdown__item"><span>${secs}</span> ${secs == 1 ? window.dateStrings.second : window.dateStrings.seconds}</div>`;
+
+      this.innerHTML = dayHTML + hourHTML + minHTML + secHTML;
+    }
+  }
+
+  unload() {
+    if (this.dataset.interval) {
+      clearInterval(this.dataset.interval);
+    }
+
+    this.classList.add('hidden');
+    if (this.parent) {
+      this.parent.classList.add('hidden');
+    }
+  }
+}
+customElements.define('countdown-timer', CountdownTimer);
+```
+`section-image-with-text.css`
+
+```css
+.image-with-text__grid {
+  background: var(--gradient-background);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+@media screen and (min-width: 750px) {
+  .image-with-text__grid--reverse {
+    flex-direction: row-reverse;
+  }
+
+  .image-with-text--alt .image-with-text__grid--reverse .image-with-text__content {
+    padding-inline-start: 0;
+  }
+
+  .image-with-text--alt .image-with-text__grid:not(.image-with-text__grid--reverse) .image-with-text__content {
+    padding-inline-end: 0;
+  }
+
+  .image-with-text--alt.page-width--full-width .image-with-text__grid--reverse .image-with-text__content {
+    padding-inline-start: 5rem;
+  }
+
+  .image-with-text--alt.page-width--full-width .image-with-text__grid:not(.image-with-text__grid--reverse) .image-with-text__content {
+    padding-inline-end: 5rem;
+  }
+}
+
+.image-with-text .media--placeholder {
+  background-color: rgba(var(--color-foreground), 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.image-with-text .media--placeholder.media--adapt {
+  height: 20rem;
+}
+
+@media screen and (min-width: 750px) {
+  .image-with-text .media--placeholder.media--adapt {
+    height: 30rem;
+  }
+}
+
+.image-with-text .media--placeholder > svg {
+  position: absolute;
+  left: 50%;
+  max-width: 80rem;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  fill: currentColor;
+}
+
+.image-with-text__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: 100%;
+  padding-top: 3rem;
+}
+
+.image-with-text--colored .image-with-text__content {
+  padding: 3rem 1.5rem;
+}
+
+@media screen and (min-width: 750px) {
+  .image-with-text .image-with-text__content {
+    padding: 5rem;
+  }
+
+  .image-with-text__content.center {
+    align-items: center;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+  }
+
+  .image-with-text__content.center .card--product + .card-information .card-information__top {
+    justify-content: center;
+  }
+
+  .image-with-text__content.right {
+    align-items: flex-end;
+    margin-inline-start: auto;
+  }
+
+  .image-with-text__content.right .card--product + .card-information .card-information__top {
+    justify-content: flex-end;
+  }
+
+  .image-with-text__content.middle {
+    justify-content: center;
+  }
+
+  .image-with-text__content.bottom {
+    justify-content: flex-end;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .image-with-text .image-with-text__content {
+    max-width: 64rem;
+    padding-inline-start: 7rem;
+    padding-inline-end: 7rem;
+  }
+}
+
+@media screen and (min-width: 1320px) {
+  .image-with-text .image-with-text__content {
+    max-width: 66rem;
+    padding-inline-start: 10rem;
+    padding-inline-end: 10rem;
+  }
+
+  .image-with-text .image-with-text__grid--reverse .image-with-text__content {
+    max-width: 72rem;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .image-with-text__grid-mobile--reverse {
+    flex-direction: column-reverse;
+  }
+
+  .image-with-text__grid-mobile--no-image .grid__item:first-child {
+    display: none;
+  }
+
+  .image-with-text__content.mobile-center {
+    align-items: center;
+  }
+
+  .image-with-text__content.mobile-right {
+    align-items: flex-end;
+  }
+
+  .image-with-text__content.mobile-center .button {
+    min-width: 60%;
+  }
+
+  .page-width--full-width .image-with-text__content {
+    padding-inline-start: 1.5rem;
+    padding-inline-end: 1.5rem;
+  }
+
+  .image-with-text__grid-mobile--overlap {
+    position: relative;
+    background-color: transparent;
+  }
+
+  .image-with-text__grid-mobile--overlap .media-wrapper {
+    z-index: -1;
+  }
+
+  .image-with-text__grid-mobile--overlap .image-with-text__content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .image-with-text__content .button {
+    width: 100%;
+  }
+}
+
+.image-with-text__content > * + * {
+  margin-top: 2rem;
+}
+
+.image-with-text__content > * + :is(.image-with-text__heading) {
+  margin-top: 0.5rem;
+}
+
+.image-with-text__content > * + :is(.image-with-text__heading) + :is(.image-with-text__heading) {
+  margin-top: 0;
+}
+
+.image-with-text__content > .image-with-text__text:empty ~ a {
+  margin-top: 2rem;
+}
+
+.image-with-text__content > :first-child:is(.image-with-text__heading),
+.image-with-text__content > :first-child:is(.image-with-text__subheading) {
+  margin-top: 0;
+}
+
+.image-with-text__content :last-child:is(.image-with-text__heading) {
+  margin-bottom: 0;
+}
+
+.image-with-text__content :last-child:is(.button) {
+  margin-top: 3rem;
+  margin-bottom: 0.1rem;
+}
+
+.image-with-text__content .button + .image-with-text__text {
+  margin-top: 5rem;
+}
+
+.image-with-text__heading {
+  margin-bottom: 0;
+}
+
+.image-with-text__subheading {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  margin-bottom: 0;
+}
+
+.image-with-text__subheading--colored {
+  color: rgba(var(--color-heading), 0.55);
+}
+
+.image-with-text__text--colored {
+  color: rgba(var(--color-foreground), 0.7);
+}
+
+.image-with-text__text--colored.rte a {
+  color: rgb(var(--color-link));
+  background-image: linear-gradient(to top, rgb(var(--color-border)) 0px, rgb(var(--color-border)) 0px), linear-gradient(to top, transparent 0px, transparent 0px);
+}
+
+.image-with-text__text p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+@media screen and (min-width: 750px) {
+  .image-with-text__subheading.h5 {
+    font-size: calc(var(--font-heading-scale) * 1.2rem);
+  }
+
+  .image-with-text--enlarge .grid__item:first-child {
+    max-width: calc(33.33% - var(--grid-horizontal-spacing) / 2);
+  }
+}
+
+/* custom video */
+.image-with-text--video .deferred-media__poster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-with-text--video .media-wrapper,
+.image-with-text--video .media-wrapper svg {
+  width: 100%;
+  height: 100%;
+}
+
+.image-with-text--video video,
+.image-with-text--video iframe {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+}
+```
+`section-countdown-timer.css`
+
+```css
+.no-js .countdown {
+  display: none;
+}
+
+.countdown {
+  width: 100%;
+  max-width: 57rem;
+  display: flex;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 1.3rem;
+  border: 0.1rem solid rgba(var(--color-border), 0.2);
+  border-radius: min(var(--button-radius), 0.8rem);
+}
+
+.countdown__item {
+  width: 25%;
+  padding: 1rem;
+  flex-grow: 1;
+  flex-shrink: 0;
+  font-family: var(--font-heading-family);
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--color-foreground), 0.5);
+}
+
+.countdown__item + .countdown__item {
+  border-inline-start: 0.1rem solid rgba(var(--color-border), 0.2);
+}
+
+.countdown__item span {
+  display: block;
+  color: rgb(var(--color-foreground));
+}
+
+.countdown--small span {
+  font-size: calc(var(--font-heading-scale) * 1.7rem);
+}
+
+.countdown--medium span {
+  font-size: calc(var(--font-heading-scale) * 2rem);
+}
+
+.countdown--large span {
+  font-size: calc(var(--font-heading-scale) * 3rem);
+}
+
+@media screen and (min-width: 750px) {
+  .countdown--small span {
+    font-size: calc(var(--font-heading-scale) * 2rem);
+  }
+  
+  .countdown--medium span {
+    font-size: calc(var(--font-heading-scale) * 2.8rem);
+  }
+  
+  .countdown--large span {
+    font-size: calc(var(--font-heading-scale) * 4rem);
+  }
+}
+
+.countdown-timer__message {
+  display: none;
+}
+
+.countdown.hidden + .countdown-timer__message {
+  display: block;
+}
+
+@media screen and (min-width: 990px) {
+  .image-with-text.countdown-timer .image-with-text__content {
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .image-with-text__grid-mobile--overlap .countdown {
+    border: none;
+    background-color: rgba(var(--color-button-background), 0.85);
+  }
+
+  .image-with-text__grid-mobile--overlap .countdown__item {
+    color: rgba(var(--color-button-text), 0.5);
+  }
+
+  .image-with-text__grid-mobile--overlap .countdown__item span {
+    color: rgb(var(--color-button-text));
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .image-with-text__grid-mobile--overlap .countdown ~ :last-child:is(.button) {
+    margin-top: 1.5rem;
+  }
+}
+
+```
+
+# Lazy image snippet
 ----------
 ```html
 {% comment %}
