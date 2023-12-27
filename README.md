@@ -2,13 +2,62 @@
 
 
 # Important links to resources
+# Documentation and Learning Resources
 
-* [Planned efforts generator](https://docs.google.com/spreadsheets/d/1YHSfLx-KT8mAETZ04e-jvCTvrYoY-VaRzful4ui_cDs/edit?usp=sharing)
-* [Skeleton Documention](https://ebony-beryllium-736.notion.site/Skeleton-Wiki-df6b49747653442699dc20752ad5f4d3)
-* [Prformance Opt](https://ebony-beryllium-736.notion.site/Performance-Optimisation-on-Shopify-cc555b398d88441aa9880e50009f3ece)
-* [Prebuild Solution ](https://ebony-beryllium-736.notion.site/9f9580ec93a440b7a23a430c5bcd2260?v=43ed2153c66c47b0ace0ce2ffb69f35b)
-* [Github Training](https://ebony-beryllium-736.notion.site/How-to-setup-git-Create-a-repo-Origin-Clone-repo-fdb2bf4101a944ebb8b29f08a7fcb7c4)
-* [Shopify ajax Api](https://shopify.dev/api/ajax)
+Welcome to our training and learning resources repository. Here, you'll find a curated collection of reading materials and documentation to support your professional development and learning journey. Feel free to explore the links below:
+
+## Notion Docs
+
+1. [How to do debugging](https://ebony-beryllium-736.notion.site/How-to-do-debugging-e18e11c63c8f46e9975872c4d526ed4a)
+   - [Pause your code with breakpoints](https://developer.chrome.com/docs/devtools/javascript/breakpoints/)
+
+2. [Performance Optimization](https://ebony-beryllium-736.notion.site/Performance-Optimisation-on-Shopify-cc555b398d88441aa9880e50009f3ece)
+   - [Improve your online store performance with Liquid](https://workshops.shopify.dev/workshops/online-store-performance#0)
+
+3. [What are the default things required in customization of Shopify?](https://ebony-beryllium-736.notion.site/What-are-the-default-things-required-in-customisation-of-Shopify-dbc7eb494ba64619ba24f3f068e88e13)
+
+4. [How to develop as per design](https://ebony-beryllium-736.notion.site/How-to-develop-as-per-design-741a495afa2c4d98bf5b5f9e02bf93e1)
+
+5. [Effort Estimation](https://ebony-beryllium-736.notion.site/Effort-Estimation-c73478b583134747b79a340e5b0951f0)
+   - [Automated sheet for effort estimation](https://docs.google.com/spreadsheets/d/1QHcZIh7-wWN34iKTl1Spe2Go-KBxnmX5k6tCC6RjT3I/edit?usp=sharing)
+
+7. [Git and Github with Shopify](https://ebony-beryllium-736.notion.site/Git-and-Github-with-Shopify-371702287f8c461fb17d5d052f2d2975)
+
+8. [Migrating Existing Shopify Store To GitHub](https://versed-asp-459.notion.site/Migrating-Existing-Store-To-GitHub-1aa388ad07b542ad9e0aa8c03c6ad8ab)
+
+9. [Code review 2.0](https://versed-asp-459.notion.site/Marmeto-Code-Review-2-0-a03983c7983c4716853f3981dd54aecf)
+
+10. [Pre-build solutions](https://ebony-beryllium-736.notion.site/9f9580ec93a440b7a23a430c5bcd2260?v=43ed2153c66c47b0ace0ce2ffb69f35b)
+
+11. [Tailwind setup on Shopify Store ✨](https://sphenoid-aftermath-492.notion.site/When-Tailwind-met-Shopify-02e904f40513499a88be2f3a3b362607?pvs=4)
+
+12. [Shopify Custom Pixels ✨](./docs/SHOPIFY_PIXELS.md)
+
+## Important links to resources
+
+- [Planned efforts format sheet](https://docs.google.com/spreadsheets/d/1YHSfLx-KT8mAETZ04e-jvCTvrYoY-VaRzful4ui_cDs/edit#gid=0)
+- [Tutorial to integrate React.js into Shopify theme](https://reactjsexample.com/tutorial-to-integrate-the-react-js-into-shopify-theme/)
+- [Shopify Workshop](https://workshops.shopify.dev/)
+  > Workshops provide a guided, tutorial, hands-on coding experience. Most workshops will step you through the process of building an application, theme, or function.
+- **Checkout Extensions**
+    -  [Extension Points](https://www.figma.com/file/8qYbHZTB6yGBHvDTscXIzx/Checkout-UI-Kit-(Community)?type=design&node-id=7720-22727&t=InRkWSxQ0balgUlt-0)
+    -  [Migration reading](https://honorable-net-acc.notion.site/Shopify-Checkout-Extension-8032e90e1e964f098508a43b10435ece?pvs=4)
+
+
+### Helpful Chrome Extensions
+
+- **Shopify tools**
+  - [Shopify Theme Inspector](https://chrome.google.com/webstore/detail/shopify-theme-inspector-f/fndnankcflemoafdeboboehphmiijkgp/related)
+  - [Shopify Theme Helper](https://chrome.google.com/webstore/detail/shopify-theme-helper/palnodkhbhhnaoecdfbifdfpibklccdk)
+  - [Shopify App Detector](https://chrome.google.com/webstore/detail/shopify-app-detector-by-f/lhfdhjladfcmghahdbcmlceajdlbkale)
+  - [Liquify - Shopify Code Search & Editor](https://chrome.google.com/webstore/detail/liquify-shopify-code-sear/edekihmjmpkkkaolmojnajojfgphccma)
+
+- **Other tools**
+  - [Datalayer Checker](https://chrome.google.com/webstore/detail/datalayer-checker/ffljdddodmkedhkcjhpmdajhjdbkogke)
+  - [Smart Page Ruler](https://chrome.google.com/webstore/detail/smart-page-ruler/nmibbjghlmdiafjolcphdggihcbcedmg)
+
+> Feel free to add more resources that you find useful for your learning and development. Happy learning!
+
 * [To do courses](https://www.shopify.com/in/partners/blog/97493062-free-course-10x-your-shopify-theme-development-skills-with-these-free-courses)
 ----------
 <h1 align="center" style="margin-top: 0px;">Small shopify solutions</h1>
